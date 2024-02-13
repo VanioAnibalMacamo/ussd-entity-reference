@@ -1,4 +1,4 @@
-package ussd
+package main
 
 import (
 	"fmt"
