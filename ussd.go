@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -17,11 +16,6 @@ func main() {
 	http.ListenAndServe(":"+port, nil)
 }
 
-var (
-	phoneNumber string
-	valor       string
-)
-
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
@@ -32,6 +26,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 		sessionId := r.FormValue("sessionId")
 		serviceCode := r.FormValue("serviceCode")
+		phoneNumber := r.FormValue("phoneNumber")
 		text := r.FormValue("text")
 
 		fmt.Println("Session ID:", sessionId)
@@ -41,31 +36,25 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 		switch text {
 		case "":
-			response = "Mkesh \n"
-			response += "1. Requisitar Referencia \n"
+			response = "CON What would you want to check \n"
+			response += "1. My Account \n"
+			response += "2. My phone number"
 		case "1":
-			response = "Digite o número do Telefone\n"
+			response = "CON Choose account information you want to view \n"
+			response += "1. Account number \n"
+		case "2":
+			response = "END Your phone number is " + phoneNumber
+		case "1*1":
+			accountNumber := "ACC1001"
+			response = "END Your account number is " + accountNumber
+		// Add additional cases for handling other combinations of menu selections
 		default:
-			if strings.HasPrefix(text, "1*") {
-				// Verificar se o texto começa com "1*" (indicando que o usuário digitou o número do telefone)
-				phoneNumber = strings.TrimPrefix(text, "1*")
-				if len(phoneNumber) != 9 {
-					response = "END O número de telefone deve ter 9 dígitos\n"
-				} else {
-					response = "END Seu número de telefone é " + phoneNumber + ". Digite o valor\n"
-				}
-			} else if phoneNumber != "" {
-				// Se phoneNumber estiver definido, significa que o usuário já digitou o número do telefone
-				valor = text
-				response = "END Seu número de telefone é " + phoneNumber + " e o valor digitado é " + valor
-			} else {
-				response = "END Seleção inválida"
-			}
+			response = "END Invalid selection"
 		}
 
 		w.Header().Set("Content-Type", "text/plain")
 		fmt.Fprintf(w, response)
 	} else {
-		http.Error(w, "Apenas requisições POST são suportadas", http.StatusMethodNotAllowed)
+		http.Error(w, "Only POST requests are supported", http.StatusMethodNotAllowed)
 	}
 }
