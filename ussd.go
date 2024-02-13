@@ -36,8 +36,8 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 		switch text {
 		case "":
-			response = "CON What would you want to check \n"
-			response += "1. My Account \n"
+			response = "Mkesh \n"
+			response += "1. Requisitar Referencia \n"
 			response += "2. My phone number"
 		case "1":
 			response = "CON Choose account information you want to view \n"
